@@ -1,0 +1,17 @@
+---
+controller_manager:
+  ros__parameters:
+    update_rate: 100
+
+    joint_state_broadcaster:
+      type: joint_state_broadcaster/JointStateBroadcaster
+
+    joint_position_controller:
+      type: position_controllers/JointGroupPositionController
+      joints:
+        - left_hip_roll_joint
+        - left_knee_joint
+        - left_ankle_joint
+        - right_hip_roll_joint
+        - right_knee_joint
+        - right_ankle_joint
