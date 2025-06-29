@@ -1,6 +1,52 @@
 <?xml version="1.0"?>
 <robot xmlns:xacro="http://www.ros.org/wiki/xacro" name="biped">
 
+  <!-- ros2_control hardware interface configuration -->
+  <ros2_control name="BipedSystem" type="system">
+    <hardware>
+      <plugin>gazebo_ros2_control/GazeboSystem</plugin>
+    </hardware>
+    <joint name="left_hip_roll_joint">
+      <command_interface name="position"/>
+      <state_interface name="position"/>
+      <state_interface name="velocity"/>
+    </joint>
+    <joint name="left_knee_joint">
+      <command_interface name="position"/>
+      <state_interface name="position"/>
+      <state_interface name="velocity"/>
+    </joint>
+    <joint name="left_ankle_joint">
+      <command_interface name="position"/>
+      <state_interface name="position"/>
+      <state_interface name="velocity"/>
+    </joint>
+    <joint name="right_hip_roll_joint">
+      <command_interface name="position"/>
+      <state_interface name="position"/>
+      <state_interface name="velocity"/>
+    </joint>
+    <joint name="right_knee_joint">
+      <command_interface name="position"/>
+      <state_interface name="position"/>
+      <state_interface name="velocity"/>
+    </joint>
+    <joint name="right_ankle_joint">
+      <command_interface name="position"/>
+      <state_interface name="position"/>
+      <state_interface name="velocity"/>
+    </joint>
+  </ros2_control>
+
+  <gazebo>
+    <plugin name="gazebo_ros2_control" filename="libgazebo_ros2_control.so">
+      <ros2_control>
+        <param name="update_rate">100</param>
+        <param name="config_file">/home/yogesh_rajesh/biped_ros2_ws/src/biped_description/config/biped_controllers.yaml</param>
+      </ros2_control>
+    </plugin>
+  </gazebo>
+
   <!-- Torso Link -->
   <link name="torso_link">
     <visual>
@@ -33,17 +79,6 @@
       </imu>
     </sensor>
   </gazebo>
-
-  <gazebo>
-    <plugin name="gazebo_ros2_control" filename="libgazebo_ros2_control.so">
-      <ros2_control>
-        <param name="update_rate">100</param>
-        <param name="config_file">/home/yogesh_rajesh/biped_ros2_ws/src/biped_description/config/biped_controllers.yaml</param>
-
-      </ros2_control>
-    </plugin>
-  </gazebo>
-
 
   <!-- Left Hip Joint -->
   <joint name="left_hip_roll_joint" type="revolute">

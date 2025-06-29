@@ -2,13 +2,22 @@ from launch import LaunchDescription
 from launch_ros.actions import Node
 from launch.substitutions import Command
 from launch_ros.substitutions import FindPackageShare
-from launch.actions import ExecuteProcess
-from launch.actions import TimerAction
+from launch.actions import ExecuteProcess, TimerAction
+from launch.substitutions import PathJoinSubstitution
+import yaml
 import os
 
 def generate_launch_description():
 	pkg_share = FindPackageShare('biped_description').find('biped_description')
-	controller_yaml = os.path.join(pkg_share, 'config', 'biped_controllers.yaml')
+	# controller_yaml_path = PathJoinSubstitution([
+    # 	FindPackageShare("biped_description"),
+    # 	"config",
+    # 	"biped_controllers.yaml"
+	# ])
+	controller_yaml_file = os.path.join(pkg_share, 'config', 'biped_controllers.yaml')
+	with open(controller_yaml_file, 'r') as f:
+		full_yaml = yaml.safe_load(f)
+	controller_params = full_yaml.get('controller_manager', {}).get('ros__parameters', {})
 	urdf_path = pkg_share + '/urdf/biped.urdf.xacro'
 
 	return LaunchDescription([
@@ -38,20 +47,27 @@ def generate_launch_description():
 		Node(
         	package='controller_manager',
         	executable='ros2_control_node',
-        	parameters=[{
-            	'robot_description': Command(['xacro ', urdf_path]),
-        	}, controller_yaml],
-        	output='screen'
+			output='screen',
+        	parameters=[
+				{'robot_description': Command(['xacro ', urdf_path])},
+				{'use_sim_time': True},
+				controller_params
+			]
     	),
 		TimerAction(
-			period=5.0,
+			period=3.0,
 			actions=[
 				Node(
 					package='controller_manager',
 					executable='spawner',
 					arguments=['joint_state_broadcaster', '--controller-manager', '/controller_manager'],
 					output='screen'
-				),
+				)
+			]
+		),
+		TimerAction(
+			period=6.0,
+			actions=[
 				Node(
 					package='controller_manager',
 					executable='spawner',
